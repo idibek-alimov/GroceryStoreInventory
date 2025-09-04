@@ -2,7 +2,17 @@ package tj.alimov.gorcerystoreinventory.service;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import tj.alimov.gorcerystoreinventory.dto.SupplierRequestDto;
+import tj.alimov.gorcerystoreinventory.dto.SupplierResponseDto;
+import tj.alimov.gorcerystoreinventory.dto.SupplierRequestDto;
+import tj.alimov.gorcerystoreinventory.dto.SupplierResponseDto;
+import tj.alimov.gorcerystoreinventory.exception.ResourceNotFoundException;
+import tj.alimov.gorcerystoreinventory.mapper.SupplierMapper;
+import tj.alimov.gorcerystoreinventory.model.Supplier;
 import tj.alimov.gorcerystoreinventory.model.Supplier;
 import tj.alimov.gorcerystoreinventory.repository.SupplierRepository;
 
@@ -10,25 +20,45 @@ import tj.alimov.gorcerystoreinventory.repository.SupplierRepository;
 @RequiredArgsConstructor
 public class SupplierService {
     private final SupplierRepository supplierRepository;
-
-    public Supplier create(Supplier supplier){
-        return supplierRepository.save(supplier);
+    @Transactional
+    public SupplierResponseDto create(SupplierRequestDto dto){
+        Supplier supplier = Supplier.builder()
+                .name(dto.getName())
+                .email(dto.getEmail())
+                .phone(dto.getPhone())
+                .build();
+        Supplier saved = supplierRepository.save(supplier);
+        return SupplierMapper.toDto(saved);
     }
-
-    public Supplier getById(Long id){
-        return supplierRepository.findById(id).orElseThrow(()-> new RuntimeException("Supplier with given Id not found"));
+    @Transactional(readOnly = true)
+    public Page<SupplierResponseDto> getAll(Pageable pageable){
+        Page<Supplier> supplierPage = supplierRepository.findAll(pageable);
+        return supplierPage.map(SupplierMapper::toDto);
     }
-
-    public Supplier update(Supplier supplier){
-        Supplier oldSupplier = supplierRepository.findById(supplier.getId()).orElseThrow(() -> new RuntimeException(""));
-        oldSupplier.setName(supplier.getName());
-        oldSupplier.setPhone(supplier.getPhone());
-        oldSupplier.setContactEmail(supplier.getContactEmail());
-        supplierRepository.save(oldSupplier);
-        return oldSupplier;
+    @Transactional(readOnly = true)
+    public SupplierResponseDto getById(Long id){
+        Supplier supplier =  getSupplier(id);
+        return SupplierMapper.toDto(supplier);
     }
-
+    @Transactional
+    public SupplierResponseDto update(Long id, SupplierRequestDto dto){
+        Supplier supplier =  getSupplier(id);
+        supplier.setName(dto.getName());
+        supplier.setEmail(dto.getEmail());
+        supplier.setPhone(dto.getPhone());
+        supplierRepository.save(supplier);
+        return SupplierMapper.toDto(supplier);
+    }
+    @Transactional
     public void delete(Long id){
+        if(!supplierRepository.existsById(id)){
+            throw new ResourceNotFoundException("Supplier with given ID " + id + " not found");
+        }
         supplierRepository.deleteById(id);
     }
+
+    private Supplier getSupplier(Long id){
+        return supplierRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Supplier with given ID " + id + " not found"));
+    }
+
 }

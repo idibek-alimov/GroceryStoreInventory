@@ -1,0 +1,59 @@
+Sprint 1 – Core Setup & Base Models (1 week)
+
+Initialize Spring Boot project.
+
+Configure PostgreSQL & Spring Data JPA.
+
+Create entities: Product, Category, Supplier, StockBatch.
+
+Create CRUD APIs for Category & Supplier.
+
+Sprint 2 – Product & Stock Management (1 week)
+
+CRUD APIs for Product.
+
+CRUD APIs for StockBatch.
+
+Implement service to calculate available stock for each product.
+
+Add basic validation (e.g., expiry date must be in future).
+
+Sprint 3 – Expiry Alerts & Scheduled Tasks (1–1.5 weeks)
+
+Implement @Scheduled job to check for:
+
+Products nearing expiry (within 7 days).
+
+Low stock levels.
+
+Send alerts (dashboard + optional email using Spring Mail).
+
+Sprint 4 – Restock Management (1 week)
+
+Implement RestockOrder entity & CRUD.
+
+Auto-generate RestockOrder entries for products below threshold.
+
+Mark order status (PENDING, ORDERED, RECEIVED).
+
+Sprint 5 – Dashboard & Analytics (1–1.5 weeks)
+
+Implement dashboard API endpoints:
+
+Total stock value.
+
+Top 5 products nearing expiry.
+
+Low-stock products.
+
+Wastage trend (expired items report).
+
+Build UI using Thymeleaf or React.
+
+Sprint 6 – Security & Deployment (1 week)
+
+Implement Spring Security with JWT.
+
+Add Role-based access (Admin, Staff).
+
+Dockerize application.

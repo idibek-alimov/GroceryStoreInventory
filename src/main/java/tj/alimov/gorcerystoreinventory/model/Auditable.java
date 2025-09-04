@@ -13,5 +13,5 @@ public class Auditable {
     @CreationTimestamp
     private Instant createdAt;
     @UpdateTimestamp
-    private Instant updateAt;
+    private Instant updatedAt;
 }

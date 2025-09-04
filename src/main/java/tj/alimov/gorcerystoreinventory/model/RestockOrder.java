@@ -14,12 +14,13 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RestockOrder {
+public class RestockOrder extends Auditable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
     private Product product;
 
     private Integer quantity;
@@ -27,6 +28,4 @@ public class RestockOrder {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @CreationTimestamp
-    private Instant createdAt;
 }

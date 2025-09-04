@@ -1,34 +1,39 @@
 package tj.alimov.gorcerystoreinventory.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tj.alimov.gorcerystoreinventory.dto.SupplierRequestDto;
+import tj.alimov.gorcerystoreinventory.dto.SupplierResponseDto;
 import tj.alimov.gorcerystoreinventory.model.Supplier;
 import tj.alimov.gorcerystoreinventory.service.SupplierService;
 
 @RestController
-@RequestMapping("/supplier")
+@RequestMapping("/suppliers")
 @RequiredArgsConstructor
 public class SupplierController {
     private final SupplierService supplierService;
 
     @PostMapping()
-    public ResponseEntity<Supplier> create(@RequestBody Supplier supplier){
-        Supplier createdSupplier = supplierService.create(supplier);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdSupplier);
+    public ResponseEntity<SupplierResponseDto> create(@Valid @RequestBody SupplierRequestDto dto){
+        SupplierResponseDto created = supplierService.create(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Supplier> getById(@PathVariable("id") Long id){
-        Supplier supplier = supplierService.getById(id);
-        return ResponseEntity.ok(supplier);
+    public ResponseEntity<SupplierResponseDto> getById(@PathVariable("id") Long id){
+        SupplierResponseDto dto = supplierService.getById(id);
+        return ResponseEntity.ok(dto);
     }
 
-    @PutMapping()
-    public ResponseEntity<Supplier> update(@RequestBody Supplier supplier){
-        Supplier updatedSupplier = supplierService.update(supplier);
-        return ResponseEntity.ok(updatedSupplier);
+    @PutMapping("/{id}")
+    public ResponseEntity<SupplierResponseDto> update(
+            @PathVariable("id") Long id,
+            @Valid @RequestBody SupplierRequestDto dto){
+        SupplierResponseDto updated = supplierService.update(id, dto);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
