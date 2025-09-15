@@ -14,7 +14,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RestockOrder extends Auditable{
+public class RestockOrder{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -2,9 +2,12 @@ package tj.alimov.gorcerystoreinventory.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tj.alimov.gorcerystoreinventory.dto.CategoryResponseDto;
 import tj.alimov.gorcerystoreinventory.dto.SupplierRequestDto;
 import tj.alimov.gorcerystoreinventory.dto.SupplierResponseDto;
 import tj.alimov.gorcerystoreinventory.model.Supplier;
@@ -26,6 +29,12 @@ public class SupplierController {
     public ResponseEntity<SupplierResponseDto> getById(@PathVariable("id") Long id){
         SupplierResponseDto dto = supplierService.getById(id);
         return ResponseEntity.ok(dto);
+    }
+    @GetMapping("/{page}/{size}")
+    public ResponseEntity<Page<SupplierResponseDto>> getAll(@PathVariable("page") Integer page,
+                                                            @PathVariable("size") Integer size){
+        Page<SupplierResponseDto> responsePage = supplierService.getAll(PageRequest.of(page, size));
+        return ResponseEntity.ok(responsePage);
     }
 
     @PutMapping("/{id}")
