@@ -1,15 +1,12 @@
 package tj.alimov.gorcerystoreinventory.mapper;
 
-import tj.alimov.gorcerystoreinventory.dto.SupplierResponseDto;
+import org.mapstruct.Mapper;
+import tj.alimov.gorcerystoreinventory.dto.supplier.SupplierRequestDto;
+import tj.alimov.gorcerystoreinventory.dto.supplier.SupplierResponseDto;
 import tj.alimov.gorcerystoreinventory.model.Supplier;
 
-public class SupplierMapper {
-    public static SupplierResponseDto toDto(Supplier supplier){
-        return SupplierResponseDto.builder()
-                .id(supplier.getId())
-                .name(supplier.getName())
-                .email(supplier.getEmail())
-                .phone(supplier.getPhone())
-                .build();
-    }
+@Mapper(componentModel = "spring")
+public interface SupplierMapper {
+    SupplierResponseDto toDto(Supplier supplier);
+    Supplier toEntity(SupplierRequestDto dto);
 }

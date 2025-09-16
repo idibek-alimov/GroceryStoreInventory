@@ -8,15 +8,13 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import tj.alimov.gorcerystoreinventory.dto.CategoryRequestDto;
-import tj.alimov.gorcerystoreinventory.dto.CategoryResponseDto;
+import tj.alimov.gorcerystoreinventory.dto.category.CategoryRequestDto;
+import tj.alimov.gorcerystoreinventory.dto.category.CategoryResponseDto;
 import tj.alimov.gorcerystoreinventory.exception.ResourceNotFoundException;
 import tj.alimov.gorcerystoreinventory.model.Category;
 import tj.alimov.gorcerystoreinventory.repository.CategoryRepository;
 import tj.alimov.gorcerystoreinventory.service.CategoryService;
 
-import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 

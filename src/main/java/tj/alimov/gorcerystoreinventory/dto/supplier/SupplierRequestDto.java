@@ -1,4 +1,4 @@
-package tj.alimov.gorcerystoreinventory.dto;
+package tj.alimov.gorcerystoreinventory.dto.supplier;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

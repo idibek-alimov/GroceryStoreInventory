@@ -6,13 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tj.alimov.gorcerystoreinventory.dto.SupplierRequestDto;
-import tj.alimov.gorcerystoreinventory.dto.SupplierResponseDto;
-import tj.alimov.gorcerystoreinventory.dto.SupplierRequestDto;
-import tj.alimov.gorcerystoreinventory.dto.SupplierResponseDto;
+import tj.alimov.gorcerystoreinventory.dto.supplier.SupplierRequestDto;
+import tj.alimov.gorcerystoreinventory.dto.supplier.SupplierResponseDto;
 import tj.alimov.gorcerystoreinventory.exception.ResourceNotFoundException;
 import tj.alimov.gorcerystoreinventory.mapper.SupplierMapper;
-import tj.alimov.gorcerystoreinventory.model.Supplier;
 import tj.alimov.gorcerystoreinventory.model.Supplier;
 import tj.alimov.gorcerystoreinventory.repository.SupplierRepository;
 
@@ -20,6 +17,7 @@ import tj.alimov.gorcerystoreinventory.repository.SupplierRepository;
 @RequiredArgsConstructor
 public class SupplierService {
     private final SupplierRepository supplierRepository;
+    private final SupplierMapper supplierMapper;
     @Transactional
     public SupplierResponseDto create(SupplierRequestDto dto){
         Supplier supplier = Supplier.builder()
@@ -28,17 +26,17 @@ public class SupplierService {
                 .phone(dto.getPhone())
                 .build();
         Supplier saved = supplierRepository.save(supplier);
-        return SupplierMapper.toDto(saved);
+        return supplierMapper.toDto(saved);
     }
     @Transactional(readOnly = true)
     public Page<SupplierResponseDto> getAll(Pageable pageable){
         Page<Supplier> supplierPage = supplierRepository.findAll(pageable);
-        return supplierPage.map(SupplierMapper::toDto);
+        return supplierPage.map(supplierMapper::toDto);
     }
     @Transactional(readOnly = true)
     public SupplierResponseDto getById(Long id){
         Supplier supplier =  getSupplier(id);
-        return SupplierMapper.toDto(supplier);
+        return supplierMapper.toDto(supplier);
     }
     @Transactional
     public SupplierResponseDto update(Long id, SupplierRequestDto dto){
@@ -47,7 +45,7 @@ public class SupplierService {
         supplier.setEmail(dto.getEmail());
         supplier.setPhone(dto.getPhone());
         supplierRepository.save(supplier);
-        return SupplierMapper.toDto(supplier);
+        return supplierMapper.toDto(supplier);
     }
     @Transactional
     public void delete(Long id){
@@ -57,7 +55,7 @@ public class SupplierService {
         supplierRepository.deleteById(id);
     }
 
-    private Supplier getSupplier(Long id){
+    public Supplier getSupplier(Long id){
         return supplierRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Supplier with given ID " + id + " not found"));
     }
 

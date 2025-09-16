@@ -1,4 +1,4 @@
-package tj.alimov.gorcerystoreinventory.dto;
+package tj.alimov.gorcerystoreinventory.dto.category;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

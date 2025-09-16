@@ -1,4 +1,4 @@
-package tj.alimov.gorcerystoreinventory.dto;
+package tj.alimov.gorcerystoreinventory.dto.supplier;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

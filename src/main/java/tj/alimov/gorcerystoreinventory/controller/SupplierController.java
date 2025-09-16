@@ -7,10 +7,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tj.alimov.gorcerystoreinventory.dto.CategoryResponseDto;
-import tj.alimov.gorcerystoreinventory.dto.SupplierRequestDto;
-import tj.alimov.gorcerystoreinventory.dto.SupplierResponseDto;
-import tj.alimov.gorcerystoreinventory.model.Supplier;
+import tj.alimov.gorcerystoreinventory.dto.supplier.SupplierRequestDto;
+import tj.alimov.gorcerystoreinventory.dto.supplier.SupplierResponseDto;
 import tj.alimov.gorcerystoreinventory.service.SupplierService;
 
 @RestController
