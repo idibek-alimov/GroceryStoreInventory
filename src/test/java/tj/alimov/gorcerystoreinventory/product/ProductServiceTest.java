@@ -6,10 +6,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import tj.alimov.gorcerystoreinventory.dto.category.CategoryResponseDto;
 import tj.alimov.gorcerystoreinventory.dto.product.ProductRequestDto;
 import tj.alimov.gorcerystoreinventory.dto.product.ProductResponseDto;
 import tj.alimov.gorcerystoreinventory.dto.supplier.SupplierResponseDto;
+import tj.alimov.gorcerystoreinventory.exception.ResourceNotFoundException;
 import tj.alimov.gorcerystoreinventory.mapper.ProductMapper;
 import tj.alimov.gorcerystoreinventory.model.Category;
 import tj.alimov.gorcerystoreinventory.model.Product;
@@ -21,6 +25,7 @@ import tj.alimov.gorcerystoreinventory.service.ProductService;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -82,4 +87,40 @@ public class ProductServiceTest {
         assertEquals(responseDto.getCategory().getId(), 1L);
         assertEquals(responseDto.getSupplier().getId(), 1L);
     }
+
+
+
+    @Test
+    void getAll_ShouldReturnPageOfProductResponseDto(){
+        when(productRepository.findAll(any(PageRequest.class))).thenReturn(new PageImpl<>(List.of(product)));
+        when(productMapper.toDto(any(Product.class))).thenReturn(responseDto);
+
+        Page<ProductResponseDto> page = productService.getAll(PageRequest.of(0, 10));
+
+        assertNotNull(page);
+        assertEquals(1, page.getSize());
+        assertEquals("product", page.getContent().get(0).getName());
+    }
+
+    @Test
+    void getById_ShouldReturnProductResponseDto(){
+        when(productRepository.findById(any(Long.class))).thenReturn(Optional.of(product));
+        when(productMapper.toDto(any(Product.class))).thenReturn(responseDto);
+
+        ProductResponseDto response = productService.getById(1L);
+
+        assertNotNull(response);
+        assertEquals("product", response.getName());
+        assertEquals(1L, response.getId());
+    }
+
+    @Test
+    void getById_ShouldThrowException(){
+        when(productRepository.findById(99L)).thenReturn(Optional.empty());
+        when(productMapper.toDto(any(Product.class))).thenReturn(responseDto);
+
+        assertThrows(ResourceNotFoundException.class, () -> productService.getById(99L));
+    }
+
+
 }
