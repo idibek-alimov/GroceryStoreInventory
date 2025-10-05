@@ -16,6 +16,8 @@ import tj.alimov.gorcerystoreinventory.repository.CategoryRepository;
 import tj.alimov.gorcerystoreinventory.repository.ProductRepository;
 import tj.alimov.gorcerystoreinventory.repository.SupplierRepository;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -48,7 +50,6 @@ public class ProductService {
     @Transactional
     public ProductResponseDto update(Long id, ProductRequestDto dto){
         Product product =  getProduct(id);
-
         product.setName(dto.getName());
         product.setMinStockLevel(dto.getMinStockLevel());
 
@@ -61,8 +62,24 @@ public class ProductService {
             Supplier supplier = getSupplier(dto.getSupplierId());
             product.setSupplier(supplier);
         }
-
         return productMapper.toDto(product);
+    }
+
+    @Transactional
+    public ProductResponseDto partialUpdate(Long id, Map<String, Object> updates){
+        Product product = getProduct(id);
+
+        updates.forEach((field, value) -> {
+            switch(field){
+                case "name" -> product.setName((String) value);
+                case "minStockLevel" -> product.setMinStockLevel((Integer) value);
+                case "categoryId" -> product.setCategory(getCategory((Long) value));
+                case "supplierId" -> product.setSupplier(getSupplier((Long) value));
+                default -> throw new IllegalArgumentException("Field " + field + " is not supported for patching");
+            }
+        });
+        return productMapper.toDto(product);
+
     }
     @Transactional
     public void delete(Long id){

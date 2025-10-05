@@ -4,12 +4,15 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tj.alimov.gorcerystoreinventory.dto.category.CategoryRequestDto;
 import tj.alimov.gorcerystoreinventory.dto.category.CategoryResponseDto;
 import tj.alimov.gorcerystoreinventory.service.CategoryService;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/categories")
@@ -29,10 +32,9 @@ public class CategoryController {
         return ResponseEntity.ok(dto);
     }
 
-    @GetMapping("/{page}/{size}")
-    public ResponseEntity<Page<CategoryResponseDto>> getAll(@PathVariable("page") Integer page,
-                                                            @PathVariable("size") Integer size){
-        Page<CategoryResponseDto> responsePage = categoryService.getAll(PageRequest.of(page, size));
+    @GetMapping("")
+    public ResponseEntity<Page<CategoryResponseDto>> getAll(Pageable pageable){
+        Page<CategoryResponseDto> responsePage = categoryService.getAll(pageable);
         return ResponseEntity.ok(responsePage);
     }
 
@@ -42,6 +44,13 @@ public class CategoryController {
             @Valid @RequestBody CategoryRequestDto dto){
         CategoryResponseDto updated = categoryService.update(id, dto);
         return ResponseEntity.ok(updated);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<CategoryResponseDto> partialUpdate(
+            @PathVariable("id") Long id,
+            @RequestBody Map<String, Object> updates){
+        return ResponseEntity.ok(categoryService.partialUpdate(id, updates));
     }
 
     @DeleteMapping("/{id}")

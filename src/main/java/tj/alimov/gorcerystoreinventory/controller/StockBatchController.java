@@ -4,12 +4,15 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tj.alimov.gorcerystoreinventory.dto.stockBatch.StockBatchRequestDto;
 import tj.alimov.gorcerystoreinventory.dto.stockBatch.StockBatchResponseDto;
 import tj.alimov.gorcerystoreinventory.service.StockBatchService;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/stock-batches")
@@ -30,17 +33,16 @@ public class StockBatchController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{page}/{size}")
-    public ResponseEntity<Page<StockBatchResponseDto>> getAll(@PathVariable("page") Integer page, @PathVariable("size") Integer size){
-        Page<StockBatchResponseDto> pageResponse = stockBatchService.getAll(PageRequest.of(page, size));
+    @GetMapping("")
+    public ResponseEntity<Page<StockBatchResponseDto>> getAll(Pageable pageable){
+        Page<StockBatchResponseDto> pageResponse = stockBatchService.getAll(pageable);
         return ResponseEntity.ok(pageResponse);
     }
 
-    @GetMapping("/product/{id}/{page}/{size}")
+    @GetMapping("/product/{id}")
     public ResponseEntity<Page<StockBatchResponseDto>> findByProduct(@PathVariable("id") Long id,
-                                                                     @PathVariable("page") Integer page,
-                                                                     @PathVariable("size") Integer size){
-        Page<StockBatchResponseDto> pageResponse = stockBatchService.getByProduct(id, PageRequest.of(page, size));
+                                                                     Pageable pageable) {
+        Page<StockBatchResponseDto> pageResponse = stockBatchService.getByProduct(id, pageable);
         return ResponseEntity.ok(pageResponse);
     }
 
@@ -49,6 +51,12 @@ public class StockBatchController {
                                                        @Valid @RequestBody StockBatchRequestDto dto){
         StockBatchResponseDto response = stockBatchService.update(id, dto);
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<StockBatchResponseDto> partialUpdate(@PathVariable("id") Long id,
+                                                               @RequestBody Map<String, Object> updates){
+        return ResponseEntity.ok(stockBatchService.partialUpdate(id, updates));
     }
 
     @DeleteMapping("/{id}")

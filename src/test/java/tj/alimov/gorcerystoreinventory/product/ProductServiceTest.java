@@ -119,7 +119,21 @@ public class ProductServiceTest {
         when(productRepository.findById(99L)).thenReturn(Optional.empty());
         when(productMapper.toDto(any(Product.class))).thenReturn(responseDto);
 
+
         assertThrows(ResourceNotFoundException.class, () -> productService.getById(99L));
+    }
+
+    @Test
+    void update_ShouldReturnProductResponseDto(){
+        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
+        when(supplierRepository.findById(1L)).thenReturn(Optional.of(supplier));
+        when(productMapper.toDto(product)).thenReturn(responseDto);
+        requestDto.setName("productUpdate");
+        ProductResponseDto response = productService.update(1L, requestDto);
+
+        assertNotNull(response);
+        assertEquals(responseDto.getName(), response.getName());
     }
 
 

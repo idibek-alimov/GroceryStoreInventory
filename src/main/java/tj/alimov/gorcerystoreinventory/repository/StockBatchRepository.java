@@ -12,4 +12,7 @@ public interface StockBatchRepository extends JpaRepository<StockBatch, Long> {
     @Query(value = "SELECT sb FROM StockBatch sb WHERE sb.product.id = :id",
             countQuery = "SELECT COUNT(sb) FROM StockBatch sb")
     Page<StockBatch> getByProduct(@Param("productId") Long id,@Param("pageable") Pageable pageable);
+
+    @Query(value = "SELECT SUM(sb.quantity) FROM StockBatch sb WHERE sb.product.id = :productId")
+    Integer getTotalStockByProductId(@Param("productId") Long productId);
 }

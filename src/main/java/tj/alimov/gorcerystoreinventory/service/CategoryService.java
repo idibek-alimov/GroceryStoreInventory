@@ -12,6 +12,8 @@ import tj.alimov.gorcerystoreinventory.exception.ResourceNotFoundException;
 import tj.alimov.gorcerystoreinventory.model.Category;
 import tj.alimov.gorcerystoreinventory.repository.CategoryRepository;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
@@ -39,6 +41,19 @@ public class CategoryService {
         category.setName(dto.getName());
         category.setDescription(dto.getDescription());
         categoryRepository.save(category);
+        return categoryMapper.toDto(category);
+    }
+    @Transactional
+    public CategoryResponseDto partialUpdate(Long id, Map<String, Object> updates){
+        Category category = getCategory(id);
+
+        updates.forEach((field, value) -> {
+            switch(field){
+                case "name" -> category.setName((String) value);
+                case "description" -> category.setDescription((String) value);
+                default -> throw new IllegalArgumentException("Field" + field + " not supported for patching");
+            }
+        });
         return categoryMapper.toDto(category);
     }
     @Transactional

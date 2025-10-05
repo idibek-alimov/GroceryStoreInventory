@@ -16,6 +16,10 @@ import tj.alimov.gorcerystoreinventory.model.StockBatch;
 import tj.alimov.gorcerystoreinventory.repository.ProductRepository;
 import tj.alimov.gorcerystoreinventory.repository.StockBatchRepository;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class StockBatchService {
@@ -40,7 +44,7 @@ public class StockBatchService {
 
     @Transactional(readOnly = true)
     public StockBatchResponseDto getById(Long id){
-        StockBatch stockBatch = stockBatchRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("StockBatch with id " + id + " not found"));
+        StockBatch stockBatch = getStockBatch(id);
         return stockBatchMapper.toDto(stockBatch);
     }
     @Transactional(readOnly = true)
@@ -56,7 +60,7 @@ public class StockBatchService {
 
     @Transactional
     public StockBatchResponseDto update(Long id, StockBatchRequestDto dto){
-        StockBatch stockBatch = stockBatchRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("StockBatch with id " + id + " not found"));
+        StockBatch stockBatch = getStockBatch(id);
         if(stockBatch.getProduct().getId() != dto.getProductId()){
             Product product = getProduct(dto.getProductId());
             stockBatch.setProduct(product);
@@ -68,8 +72,31 @@ public class StockBatchService {
         return stockBatchMapper.toDto(stockBatch);
     }
     @Transactional
+    public StockBatchResponseDto partialUpdate(Long id,
+                                               Map<String, Object> updates){
+        StockBatch stockBatch = getStockBatch(id);
+        updates.forEach((field, value) -> {
+            switch(field){
+                case "productId" -> stockBatch.setProduct(getProduct((Long) value));
+                case "quantity" -> stockBatch.setQuantity((Integer) value);
+                case "expiryDate" -> stockBatch.setExpiryDate(Instant.parse(value.toString()));
+                case "receivedDate" -> stockBatch.setReceivedDate(Instant.parse(value.toString()));
+                default -> throw new IllegalArgumentException("Field " + field + " is not supported for patching");
+            }
+        });
+        return stockBatchMapper.toDto(stockBatch);
+    }
+
+    @Transactional
     public void delete(Long id){
+        if(!stockBatchRepository.existsById(id)){
+            throw new ResourceNotFoundException("StockBatch with id " + id + " not found");
+        }
         stockBatchRepository.deleteById(id);
+    }
+
+    private StockBatch getStockBatch(Long id){
+        return stockBatchRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("StockBatch with id " + id + " not found"));
     }
     private Product getProduct(Long id){
         return productRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Product with id " + id + " not found"));

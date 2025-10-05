@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -16,7 +19,10 @@ import tj.alimov.gorcerystoreinventory.dto.category.CategoryRequestDto;
 import tj.alimov.gorcerystoreinventory.dto.category.CategoryResponseDto;
 import tj.alimov.gorcerystoreinventory.service.CategoryService;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 @WebMvcTest(CategoryController.class)
@@ -41,7 +47,7 @@ public class CategoryControllerTest {
         CategoryRequestDto request = new CategoryRequestDto("Fruits", "Fresh fruits");
         CategoryResponseDto response = new CategoryResponseDto(1L, "Fruits", "Fresh fruits");
 
-        Mockito.when(categoryService.create(any(CategoryRequestDto.class))).thenReturn(response);
+        when(categoryService.create(any(CategoryRequestDto.class))).thenReturn(response);
 
         mockMvc.perform(post("/categories")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -55,14 +61,39 @@ public class CategoryControllerTest {
     void getById_ShouldReturnCategory() throws Exception{
         CategoryResponseDto response = new CategoryResponseDto(1L, "Fruits", "Fresh fruits");
 
-        Mockito.when(categoryService.getById(any(Long.class))).thenReturn(response);
+        when(categoryService.getById(any(Long.class))).thenReturn(response);
 
         mockMvc.perform(get("/categories/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Fruits"));
     }
 
+    @Test
+    void getAll_ShouldReturnPageOfCategoryResponseDto() throws Exception{
+        // Prepare fake data
+        CategoryResponseDto category1 = new CategoryResponseDto(1L, "Fruits", "Fresh fruits");
+        CategoryResponseDto category2 = new CategoryResponseDto(2L, "Vegetables", "Green veggies");
 
+        Page<CategoryResponseDto> pageResponse = new PageImpl<>(List.of(category1, category2));
+
+        // Mock service
+        when(categoryService.getAll(any(Pageable.class))).thenReturn(pageResponse);
+
+        // Perform GET request with paging params
+        mockMvc.perform(get("/categories")
+                        .param("page", "0")
+                        .param("size", "2")
+                        .param("sort", "name,asc")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                // validate response body JSON
+                .andExpect(jsonPath("$.content[0].id").value(1))
+                .andExpect(jsonPath("$.content[0].name").value("Fruits"))
+                .andExpect(jsonPath("$.content[1].name").value("Vegetables"))
+                // validate page metadata
+                .andExpect(jsonPath("$.size").value(2))
+                .andExpect(jsonPath("$.number").value(0));
+    }
 
 
 }

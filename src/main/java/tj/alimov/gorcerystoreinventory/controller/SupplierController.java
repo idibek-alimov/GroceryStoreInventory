@@ -4,12 +4,15 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tj.alimov.gorcerystoreinventory.dto.supplier.SupplierRequestDto;
 import tj.alimov.gorcerystoreinventory.dto.supplier.SupplierResponseDto;
 import tj.alimov.gorcerystoreinventory.service.SupplierService;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/suppliers")
@@ -28,10 +31,9 @@ public class SupplierController {
         SupplierResponseDto dto = supplierService.getById(id);
         return ResponseEntity.ok(dto);
     }
-    @GetMapping("/{page}/{size}")
-    public ResponseEntity<Page<SupplierResponseDto>> getAll(@PathVariable("page") Integer page,
-                                                            @PathVariable("size") Integer size){
-        Page<SupplierResponseDto> responsePage = supplierService.getAll(PageRequest.of(page, size));
+    @GetMapping("")
+    public ResponseEntity<Page<SupplierResponseDto>> getAll(Pageable pageable){
+        Page<SupplierResponseDto> responsePage = supplierService.getAll(pageable);
         return ResponseEntity.ok(responsePage);
     }
 
@@ -42,7 +44,11 @@ public class SupplierController {
         SupplierResponseDto updated = supplierService.update(id, dto);
         return ResponseEntity.ok(updated);
     }
-
+    @PatchMapping("/{id}")
+    public ResponseEntity<SupplierResponseDto> partialUpdate(@PathVariable("id") Long id,
+                                                             @RequestBody Map<String, Object> updates){
+        return ResponseEntity.ok(supplierService.partialUpdate(id, updates));
+    }
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id){
         supplierService.delete(id);

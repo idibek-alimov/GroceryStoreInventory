@@ -13,6 +13,8 @@ import tj.alimov.gorcerystoreinventory.mapper.SupplierMapper;
 import tj.alimov.gorcerystoreinventory.model.Supplier;
 import tj.alimov.gorcerystoreinventory.repository.SupplierRepository;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class SupplierService {
@@ -45,6 +47,19 @@ public class SupplierService {
         supplier.setEmail(dto.getEmail());
         supplier.setPhone(dto.getPhone());
         supplierRepository.save(supplier);
+        return supplierMapper.toDto(supplier);
+    }
+    @Transactional
+    public SupplierResponseDto partialUpdate(Long id, Map<String, Object> updates){
+        Supplier supplier = getSupplier(id);
+        updates.forEach((field, value) -> {
+           switch(field){
+               case "name" -> supplier.setName((String) value);
+               case "email" -> supplier.setEmail((String) value);
+               case "phone" -> supplier.setPhone((String) value);
+               default -> throw new IllegalArgumentException("Field " + field + " is not supported for patching");
+           }
+        });
         return supplierMapper.toDto(supplier);
     }
     @Transactional

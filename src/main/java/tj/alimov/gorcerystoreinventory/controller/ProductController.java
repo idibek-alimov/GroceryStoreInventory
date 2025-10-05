@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,9 +12,11 @@ import tj.alimov.gorcerystoreinventory.dto.product.ProductRequestDto;
 import tj.alimov.gorcerystoreinventory.dto.product.ProductResponseDto;
 import tj.alimov.gorcerystoreinventory.service.ProductService;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("products/")
+@RequestMapping("/products")
 public class ProductController {
 
     private final ProductService productService;
@@ -30,10 +33,9 @@ public class ProductController {
         return ResponseEntity.ok(dto);
     }
 
-    @GetMapping("/{page}/{size}")
-    public ResponseEntity<Page<ProductResponseDto>> getAll(@PathVariable("page") Integer page,
-                                                            @PathVariable("size") Integer size){
-        Page<ProductResponseDto> responsePage = productService.getAll(PageRequest.of(page, size));
+    @GetMapping("")
+    public ResponseEntity<Page<ProductResponseDto>> getAll(Pageable pageable){
+        Page<ProductResponseDto> responsePage = productService.getAll(pageable);
         return ResponseEntity.ok(responsePage);
     }
 
@@ -43,6 +45,13 @@ public class ProductController {
             @Valid @RequestBody ProductRequestDto dto){
         ProductResponseDto updated = productService.update(id, dto);
         return ResponseEntity.ok(updated);
+    }
+    @PatchMapping("{id}")
+    public ResponseEntity<ProductResponseDto> partialUpdate(
+            @PathVariable("id") Long id,
+            @RequestBody Map<String, Object> updates
+            ){
+        return ResponseEntity.ok(productService.partialUpdate(id, updates));
     }
 
     @DeleteMapping("/{id}")
