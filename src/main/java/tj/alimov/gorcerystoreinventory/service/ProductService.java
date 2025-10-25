@@ -3,6 +3,7 @@ package tj.alimov.gorcerystoreinventory.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tj.alimov.gorcerystoreinventory.dto.product.ProductRequestDto;
@@ -15,7 +16,9 @@ import tj.alimov.gorcerystoreinventory.model.Supplier;
 import tj.alimov.gorcerystoreinventory.repository.CategoryRepository;
 import tj.alimov.gorcerystoreinventory.repository.ProductRepository;
 import tj.alimov.gorcerystoreinventory.repository.SupplierRepository;
+import tj.alimov.gorcerystoreinventory.specifications.ProductSpecification;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 @Service
@@ -88,6 +91,25 @@ public class ProductService {
         }
         productRepository.deleteById(id);
     }
+
+    @Transactional(readOnly = true)
+    public Page<ProductResponseDto> searchAndFilter(
+            Long categoryId,
+            Long supplierId,
+            BigDecimal minPrice,
+            BigDecimal maxPrice,
+            String query,
+            Pageable pageable) {
+        Specification<Product> spec = Specification.unrestricted();
+        spec.and(ProductSpecification.hasCategory(categoryId));
+        spec.and(ProductSpecification.hasSupplier(supplierId));
+        spec.and(ProductSpecification.priceBetween(minPrice, maxPrice));
+        spec.and(ProductSpecification.nameContains(query));
+
+        Page<Product> products = productRepository.findAll(spec, pageable);
+        return products.map(productMapper::toDto);
+    }
+
     private Product getProduct(Long id){
         return productRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Product with id " + id + " not found"));
     }

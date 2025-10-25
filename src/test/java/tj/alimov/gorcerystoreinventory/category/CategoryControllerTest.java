@@ -42,6 +42,7 @@ public class CategoryControllerTest {
         objectMapper = new ObjectMapper();
     }
 
+    // CREATE
     @Test
     void create_ShouldReturn201AndCategory() throws Exception{
         CategoryRequestDto request = new CategoryRequestDto("Fruits", "Fresh fruits");
@@ -56,7 +57,7 @@ public class CategoryControllerTest {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("Fruits"));
     }
-
+    // GET
     @Test
     void getById_ShouldReturnCategory() throws Exception{
         CategoryResponseDto response = new CategoryResponseDto(1L, "Fruits", "Fresh fruits");
@@ -95,5 +96,10 @@ public class CategoryControllerTest {
                 .andExpect(jsonPath("$.number").value(0));
     }
 
+    // PUT
+    @Test
+    void put_ShouldReturnCategoryResponseDto() throws Exception {
+
+    }
 
 }

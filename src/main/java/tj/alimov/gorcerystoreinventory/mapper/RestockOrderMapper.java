@@ -5,7 +5,7 @@ import org.mapstruct.Mapping;
 import tj.alimov.gorcerystoreinventory.dto.supplier.RestockOrderResponseDto;
 import tj.alimov.gorcerystoreinventory.model.RestockOrder;
 
-@Mapper(componentModel = "sprint")
+@Mapper(componentModel = "spring")
 public interface RestockOrderMapper {
 
     @Mapping(source = "product.id", target = "productId")

@@ -12,6 +12,7 @@ import tj.alimov.gorcerystoreinventory.dto.product.ProductRequestDto;
 import tj.alimov.gorcerystoreinventory.dto.product.ProductResponseDto;
 import tj.alimov.gorcerystoreinventory.service.ProductService;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 @RestController
@@ -58,5 +59,24 @@ public class ProductController {
     public ResponseEntity<Void> delete(@PathVariable("id") Long id){
         productService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<ProductResponseDto>> searchProducts(
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Long supplierId,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) String query,
+            Pageable pageable) {
+        Page<ProductResponseDto> page = productService.searchAndFilter(
+                categoryId,
+                supplierId,
+                minPrice,
+                maxPrice,
+                query,
+                pageable
+        );
+        return ResponseEntity.ok(page);
     }
 }
